@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "415077488082",
+    "project_id": "bus-finder-65525",
+    "storage_bucket": "bus-finder-65525.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:415077488082:android:b44d748c9b4b317ad6e40b",
+        "android_client_info": {
+          "package_name": "com.example.bus_finding_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyClj1s2f2gFc7Wo7s211Uze17FWeGKc0Mo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
