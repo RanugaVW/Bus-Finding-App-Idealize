@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'login_screen.dart'; // Login screen
 import 'home_screen.dart'; // Home screen
 import 'registration_screen.dart'; // Registration screen
+import 'profile_screen.dart'; // Profile screen
+import 'routes_screen.dart'; // Routes screen
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -15,12 +17,13 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Bus Finding App',
-      initialRoute: '/login',
+      initialRoute: '/login', // Starting with login screen
       routes: {
         '/login': (context) => LoginScreen(),
         '/home': (context) => HomeScreen(),
-        '/register': (context) =>
-            RegistrationScreen(), // Added route for registration
+        '/register': (context) => RegistrationScreen(),
+        '/profile': (context) => ProfileScreen(),
+        '/routes': (context) => RoutesScreen(),
       },
     );
   }
