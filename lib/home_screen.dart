@@ -39,6 +39,12 @@ class HomeScreen extends StatelessWidget {
               },
             ),
             ListTile(
+              title: Text('Update Location'),
+              onTap: () {
+                Navigator.pushNamed(context, '/update_location');
+              },
+            ),
+            ListTile(
               title: Text('Routes'),
               onTap: () {
                 Navigator.pushNamed(context, '/routes');

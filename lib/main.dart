@@ -5,6 +5,7 @@ import 'home_screen.dart'; // Home screen
 import 'registration_screen.dart'; // Registration screen
 import 'profile_screen.dart'; // Profile screen
 import 'routes_screen.dart'; // Routes screen
+import 'update_location_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -24,6 +25,7 @@ class MyApp extends StatelessWidget {
         '/register': (context) => RegistrationScreen(),
         '/profile': (context) => ProfileScreen(),
         '/routes': (context) => RoutesScreen(),
+        '/update_location': (context) => UpdateLocationScreen(),
       },
     );
   }

@@ -1,5 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:uuid/uuid.dart'; // ✅ Import the uuid package
 
 class RegistrationScreen extends StatefulWidget {
   @override
@@ -11,10 +13,18 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController =
       TextEditingController();
+
   bool _isLoading = false;
   String _errorMessage = '';
 
-  // Method to handle user registration
+  ///Function to generate a unique user ID using `uuid`
+  String _generateUserId() {
+    var uuid = Uuid();
+    return "USR${uuid.v4()}";
+    // Example output: USR550e8400-e29b-41d4-a716-446655440000
+  }
+
+  /// Method to handle user registration
   Future<void> register() async {
     if (_emailController.text.isEmpty ||
         _passwordController.text.isEmpty ||
@@ -34,19 +44,33 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
 
     setState(() {
       _isLoading = true;
-      _errorMessage = ''; // Clear previous errors
+      _errorMessage = '';
     });
 
     try {
-      await FirebaseAuth.instance.createUserWithEmailAndPassword(
-        email: _emailController.text,
-        password: _passwordController.text,
-      );
-      // Navigate to Home screen after successful registration
+      // Create the user in Firebase Authentication
+      UserCredential userCredential = await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(
+            email: _emailController.text.trim(),
+            password: _passwordController.text.trim(),
+          );
+
+      // Generate a unique user ID and save it to Firestore
+      String userId = _generateUserId();
+
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(userCredential.user!.uid)
+          .set({
+            'email': _emailController.text.trim(),
+            'userId': userId,
+            'createdAt': DateTime.now(),
+          });
+
+      // Navigate to the Home screen after registration
       Navigator.pushReplacementNamed(context, '/home');
     } on FirebaseAuthException catch (e) {
       setState(() {
-        _isLoading = false;
         _errorMessage = e.message ?? 'An error occurred';
       });
     } finally {

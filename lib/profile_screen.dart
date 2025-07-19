@@ -2,6 +2,8 @@ import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'registration_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   @override
@@ -11,18 +13,33 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   final ImagePicker _picker = ImagePicker();
   String? _profilePictureUrl;
-  String _routePoints = "250"; // Example points for the user
+  String _routePoints = "250";
+  String? _userId; // To store the unique userId
 
-  // To pick a profile picture from gallery
-  Future<void> _pickProfilePicture() async {
-    final XFile? pickedFile = await _picker.pickImage(
-      source: ImageSource.gallery,
-    );
-    if (pickedFile != null) {
-      setState(() {
-        _profilePictureUrl =
-            pickedFile.path; // This will be a local file path for now
-      });
+  @override
+  void initState() {
+    super.initState();
+    _loadUserId();
+  }
+
+  /// Fetch userId from Firestore
+  Future<void> _loadUserId() async {
+    User? user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      DocumentSnapshot snapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .get();
+
+      if (snapshot.exists) {
+        setState(() {
+          _userId = snapshot['userId'] ?? 'N/A';
+        });
+      } else {
+        setState(() {
+          _userId = 'Not Found';
+        });
+      }
     }
   }
 
@@ -132,6 +149,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
+  Future<void> _pickProfilePicture() async {
+    final XFile? pickedFile = await _picker.pickImage(
+      source: ImageSource.gallery,
+    );
+    if (pickedFile != null) {
+      setState(() {
+        _profilePictureUrl = pickedFile.path;
+      });
+    }
+  }
+
+  // Existing _editProfile() and _changePassword() remain unchanged
+
   @override
   Widget build(BuildContext context) {
     User? user = FirebaseAuth.instance.currentUser;
@@ -144,13 +174,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
             return IconButton(
               icon: Icon(Icons.menu),
               onPressed: () {
-                Scaffold.of(context).openDrawer(); // Open drawer
+                Scaffold.of(context).openDrawer();
               },
             );
           },
         ),
       ),
-      // Drawer navigation (side menu)
       drawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
@@ -196,7 +225,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            // Profile Picture Section
             GestureDetector(
               onTap: _pickProfilePicture,
               child: CircleAvatar(
@@ -212,9 +240,16 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             SizedBox(height: 20),
 
-            // User Email
+            // Email
             Text('Email: ${user?.email ?? 'No user'}'),
-            SizedBox(height: 20),
+            SizedBox(height: 10),
+
+            // User ID
+            // Text(
+            //   'User ID: ${_userId ?? "Loading..."}',
+            //   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            // ),
+            // SizedBox(height: 20),
 
             // Dashboard for Route Points
             Container(
@@ -264,7 +299,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               onPressed: _changePassword,
               child: Text('Change Password'),
               style: ElevatedButton.styleFrom(backgroundColor: Colors.orange),
-            ),
+            ), // Existing route points dashboard remains unchanged
           ],
         ),
       ),
